@@ -1,7 +1,7 @@
-from django.shortcuts import render
-
-from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Food, FoodCategory
 from .serializers import FoodSerializer, FoodListSerializer
@@ -14,8 +14,9 @@ class FoodViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class FoodListViewSet(viewsets.ModelViewSet):
+class FoodListViewSet(APIView):
     """API endpoint, позволяющий просматривать или редактировать список еды"""
-    queryset = FoodCategory.objects.filter(food__is_publish=True).order_by('id').distinct()
-    serializer_class = FoodListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        foodcategory = FoodCategory.objects.filter(food__is_publish=True)
+        serializer = FoodListSerializer(foodcategory, many=True)
+        return Response(serializer.data)

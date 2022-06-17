@@ -12,7 +12,12 @@ class FoodSerializer(serializers.ModelSerializer):
 
 
 class FoodListSerializer(serializers.ModelSerializer):
-    foods = FoodSerializer(source='food', many=True, read_only=True)
+    foods = serializers.SerializerMethodField("is_publish")
+
+    def is_publish(self, category):
+        publish_food = Food.objects.filter(is_publish=True, category=category)
+        serializer = FoodSerializer(instance=publish_food, many=True)
+        return serializer.data
 
     class Meta:
         model = FoodCategory
