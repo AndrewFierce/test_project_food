@@ -17,6 +17,6 @@ class FoodViewSet(viewsets.ModelViewSet):
 class FoodListViewSet(APIView):
     """API endpoint, позволяющий просматривать или редактировать список еды"""
     def get(self, request):
-        foodcategory = FoodCategory.objects.filter(food__is_publish=True)
+        foodcategory = FoodCategory.objects.filter(food__is_publish=True).order_by('id').distinct()
         serializer = FoodListSerializer(foodcategory, many=True)
         return Response(serializer.data)
